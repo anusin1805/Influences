@@ -107,7 +107,20 @@
             z-index: 20;
             filter: drop-shadow(0 0 8px var(--accent));
         }
-        
+
+        /* Updated CSS Classes based on your corrections */
+        .complete-mandala {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 0;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
         .layer {
             position: absolute;
             top: 0; 
@@ -116,6 +129,7 @@
             height: 100%;
             object-fit: contain;
             transform-origin: center center;
+            pointer-events: none;
             /* Smooth transitions for Javascript rotation */
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
@@ -191,19 +205,41 @@
         <div id="results-panel"></div>
     </div>
 
-    <!-- MOVED THE LAYERS HERE INTO THE BODY -->
+    <!-- Updated Main Stage with correct layer tracking -->
     <div class="main-stage">
         <div class="mandala-container">
             <div class="pointer"></div>
-            <img src="layer1_core.png" class="layer layer-1" id="layer-core">
-            <img src="layer2_generations.png" class="layer layer-2" id="layer-gen">
-            <img src="layer3_seasons.png" class="layer layer-3">
-            <img src="layer4_elements.png" class="layer layer-4">
-            <img src="layer5_weekdays.png" class="layer layer-5" id="layer-week">
-            <img src="layer6_energy.png" class="layer layer-6">
-            <img src="layer7_planets.png" class="layer layer-7">
-            <img src="layer8_population.png" class="layer layer-8" id="layer-pop">
-            <img src="layer9_365days.png" class="layer layer-9" id="layer-days">
+
+            <!-- Optional complete/reference mandala -->
+            <!-- Uncomment the line below to display it as a faint background reference -->
+            <!-- <img src="IMG_7918.jpeg" class="complete-mandala"> -->
+
+            <!-- Layer 1 -->
+            <img src="IMG_7914.jpeg" class="layer layer-1" id="layer-core" alt="Core Layer">
+            
+            <!-- Layer 2 -->
+            <img src="layer2_generations.png" class="layer layer-2" id="layer-gen" alt="Generations Layer">
+            
+            <!-- Layer 3 -->
+            <img src="layer3_seasons.png" class="layer layer-3" alt="Seasons Layer">
+            
+            <!-- Layer 4 -->
+            <img src="layer4_elements.png" class="layer layer-4" alt="Elements Layer">
+            
+            <!-- Layer 5 -->
+            <img src="layer5_weekdays.png" class="layer layer-5" id="layer-week" alt="Weekdays Layer">
+            
+            <!-- Layer 6 -->
+            <img src="layer6_energy.png" class="layer layer-6" alt="Energy Layer">
+            
+            <!-- Layer 7 -->
+            <img src="layer7_planets.png" class="layer layer-7" alt="Planets Layer">
+            
+            <!-- Layer 8 -->
+            <img src="layer8_population.png" class="layer layer-8" id="layer-pop" alt="Population Layer">
+            
+            <!-- Layer 9 -->
+            <img src="IMG_7927.jpeg" class="layer layer-9" id="layer-days" alt="365 Days Layer">
         </div>
     </div>
 
@@ -223,13 +259,13 @@
                 return;
             }
 
-            // 1. Calculate Day Layer (Layer 9)
-            const dateObj = new Date(dob);
-            const month = dateObj.getMonth();
-            const day = dateObj.getDate();
-            const dayOfYear = (month * 30.4) + day;
-            const targetDayRotation = (dayOfYear / 365) * 360;
-            currentDayRotation += 1080 + targetDayRotation - (currentDayRotation % 360); 
+            // 1. Calculate Day Layer (Layer 9) - UPDATED TO ACCURATE DATE LOGIC
+            const dateObj = new Date(dob + "T00:00:00");
+            const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
+            const dayOfYear = Math.floor((dateObj - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+            const targetDayRotation = ((dayOfYear - 1) / 365) * 360;
+
+            currentDayRotation += 1080 + targetDayRotation - (currentDayRotation % 360);
             document.getElementById('layer-days').style.transform = `rotate(${currentDayRotation}deg)`;
 
             // 2. Calculate Population Layer (Layer 8) based on string length/hash for unique alignment
@@ -244,6 +280,7 @@
             document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg)`;
 
             // Generate Reading
+            const month = dateObj.getMonth();
             generateReading(month, country, generation, core);
         }
 
