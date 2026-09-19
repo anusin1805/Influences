@@ -120,7 +120,6 @@
             filter: drop-shadow(0 0 8px var(--accent));
         }
 
-        /* 1. LAYER: Handles ONLY the rotation */
         .layer {
             position: absolute;
             inset: 0;
@@ -131,24 +130,14 @@
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
-        /* 2. BLEND WRAPPER: Handles ONLY the transparency */
-        .blend-wrapper {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            mix-blend-mode: screen;
-            -webkit-mix-blend-mode: screen;
-        }
-
-        /* 3. IMAGE: Handles ONLY the color invert */
         .layer-img {
             display: block;
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: invert(100%) brightness(120%) contrast(120%);
-            -webkit-filter: invert(100%) brightness(120%) contrast(120%);
+            /* This SVG filter removes white backgrounds cleanly on iOS Safari */
+            filter: url(#remove-white-bg);
+            -webkit-filter: url(#remove-white-bg);
         }
 
         /* Z-indexes and Continuous Animations */
@@ -158,7 +147,7 @@
         .layer-4 { z-index: 4; animation: rotate-reverse 150s linear infinite; }
         .layer-5 { z-index: 5; }
         .layer-6 { z-index: 6; animation: rotate-slow 240s linear infinite; }
-        .layer-7 { z-index: 8; } /* Planet layer bumped up */
+        .layer-7 { z-index: 8; } 
         .layer-8 { z-index: 7; }
         .layer-9 { z-index: 9; }
 
@@ -190,6 +179,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+
+    <!-- SVG Filter to make white pixels transparent while keeping colors intact -->
+    <svg width="0" height="0" style="position: absolute;">
+        <filter id="remove-white-bg" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="
+                1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                -1 -1 -1 0 1" result="transparentWhite"/>
+        </filter>
+    </svg>
 </head>
 <body>
 
@@ -235,46 +235,20 @@
         <div id="results-panel"></div>
     </div>
 
-    <!-- Main Stage - Now uses a nested structure to prevent iOS Safari crashes -->
+    <!-- Main Stage -->
     <div class="main-stage">
         <div class="mandala-container">
             <div class="pointer"></div>
 
-            <div class="layer layer-1" id="layer-core">
-                <div class="blend-wrapper"><img src="IMG_7914.jpeg" class="layer-img" alt="Core Layer"></div>
-            </div>
-            
-            <div class="layer layer-2" id="layer-gen">
-                <div class="blend-wrapper"><img src="IMG_7915.jpeg" class="layer-img" alt="Generations Layer"></div>
-            </div>
-            
-            <div class="layer layer-3">
-                <div class="blend-wrapper"><img src="IMG_7916.jpeg" class="layer-img" alt="Seasons Layer"></div>
-            </div>
-            
-            <div class="layer layer-4">
-                <div class="blend-wrapper"><img src="IMG_7917.jpeg" class="layer-img" alt="Elements Layer"></div>
-            </div>
-            
-            <div class="layer layer-5" id="layer-week">
-                <div class="blend-wrapper"><img src="IMG_7923.jpeg" class="layer-img" alt="Weekdays Layer"></div>
-            </div>
-            
-            <div class="layer layer-6">
-                <div class="blend-wrapper"><img src="IMG_7924.jpeg" class="layer-img" alt="Energy Layer"></div>
-            </div>
-            
-            <div class="layer layer-7" id="layer-planets">
-                <div class="blend-wrapper"><img src="IMG_7925.jpeg" class="layer-img" alt="Planets Layer"></div>
-            </div>
-            
-            <div class="layer layer-8" id="layer-pop">
-                <div class="blend-wrapper"><img src="IMG_7926.jpeg" class="layer-img" alt="Population Layer"></div>
-            </div>
-            
-            <div class="layer layer-9" id="layer-days">
-                <div class="blend-wrapper"><img src="IMG_7927.jpeg" class="layer-img" alt="365 Days Layer"></div>
-            </div>
+            <div class="layer layer-1" id="layer-core"><img src="IMG_7914.jpeg" class="layer-img" alt="Core Layer"></div>
+            <div class="layer layer-2" id="layer-gen"><img src="IMG_7915.jpeg" class="layer-img" alt="Generations Layer"></div>
+            <div class="layer layer-3"><img src="IMG_7916.jpeg" class="layer-img" alt="Seasons Layer"></div>
+            <div class="layer layer-4"><img src="IMG_7917.jpeg" class="layer-img" alt="Elements Layer"></div>
+            <div class="layer layer-5" id="layer-week"><img src="IMG_7923.jpeg" class="layer-img" alt="Weekdays Layer"></div>
+            <div class="layer layer-6"><img src="IMG_7924.jpeg" class="layer-img" alt="Energy Layer"></div>
+            <div class="layer layer-7" id="layer-planets"><img src="IMG_7925.jpeg" class="layer-img" alt="Planets Layer"></div>
+            <div class="layer layer-8" id="layer-pop"><img src="IMG_7926.jpeg" class="layer-img" alt="Population Layer"></div>
+            <div class="layer layer-9" id="layer-days"><img src="IMG_7927.jpeg" class="layer-img" alt="365 Days Layer"></div>
         </div>
     </div>
     
