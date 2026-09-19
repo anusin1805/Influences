@@ -143,7 +143,12 @@
         .layer-3 { animation: rotate-slow 180s linear infinite; } /* Seasons */
         .layer-4 { animation: rotate-reverse 150s linear infinite; } /* Elements */
         .layer-6 { animation: rotate-slow 240s linear infinite; } /* Energy */
+        /* Ambient background rotations for nature/cosmos layers */
+        .layer-3 { animation: rotate-slow 180s linear infinite; } /* Seasons */
+        .layer-4 { animation: rotate-reverse 150s linear infinite; } /* Elements */
+        .layer-6 { animation: rotate-slow 240s linear infinite; } /* Energy */
         .layer-7 { animation: rotate-reverse 300s linear infinite; } /* Planets */
+
 
         @keyframes rotate-slow { from {transform: rotate(0deg)} to {transform: rotate(360deg)} }
         @keyframes rotate-reverse { from {transform: rotate(360deg)} to {transform: rotate(0deg)} }
@@ -224,35 +229,35 @@
             <img src="IMG_7914.jpeg" class="layer layer-1" id="layer-core" alt="Core Layer">
             
             <!-- Layer 2 -->
-            <img src="layer2_generations.png" class="layer layer-2" id="layer-gen" alt="Generations Layer">
+            <img src="IMG_7915.jpeg" class="layer layer-2" id="layer-gen" alt="Generations Layer">
             
             <!-- Layer 3 -->
-            <img src="layer3_seasons.png" class="layer layer-3" alt="Seasons Layer">
+            <img src="IMG_7916.jpeg" class="layer layer-3" alt="Seasons Layer">
             
             <!-- Layer 4 -->
-            <img src="layer4_elements.png" class="layer layer-4" alt="Elements Layer">
+            <img src="IMG_7924.jpeg" class="layer layer-4" alt="Elements Layer">
             
             <!-- Layer 5 -->
-            <img src="layer5_weekdays.png" class="layer layer-5" id="layer-week" alt="Weekdays Layer">
+            <img src="IMG_7923.jpeg" class="layer layer-5" id="layer-week" alt="Weekdays Layer">
             
             <!-- Layer 6 -->
-            <img src="layer6_energy.png" class="layer layer-6" alt="Energy Layer">
+            <img src="IMG_7924.jpeg" class="layer layer-6" alt="Energy Layer">
             
             <!-- Layer 7 -->
-            <img src="layer7_planets.png" class="layer layer-7" alt="Planets Layer">
+            <img src="IMG_7925.jpeg" class="layer layer-7" alt="Planets Layer">
             
             <!-- Layer 8 -->
-            <img src="layer8_population.png" class="layer layer-8" id="layer-pop" alt="Population Layer">
+            <img src="IMG_7926.jpeg" class="layer layer-8" id="layer-pop" alt="Population Layer">
             
             <!-- Layer 9 -->
             <img src="IMG_7927.jpeg" class="layer layer-9" id="layer-days" alt="365 Days Layer">
         </div>
     </div>
-
     <script>
         let currentDayRotation = 0;
         let currentPopRotation = 0;
         let currentGenRotation = 0;
+        let currentPlanetRotation = 0;
 
         function calculateAlignment() {
             const dob = document.getElementById('dob').value;
@@ -265,7 +270,7 @@
                 return;
             }
 
-            // 1. Calculate Day Layer (Layer 9) - UPDATED TO ACCURATE DATE LOGIC
+            // 1. Calculate Day Layer (Layer 9)
             const dateObj = new Date(dob + "T00:00:00");
             const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
             const dayOfYear = Math.floor((dateObj - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
@@ -274,7 +279,7 @@
             currentDayRotation += 1080 + targetDayRotation - (currentDayRotation % 360);
             document.getElementById('layer-days').style.transform = `rotate(${currentDayRotation}deg)`;
 
-            // 2. Calculate Population Layer (Layer 8) based on string length/hash for unique alignment
+            // 2. Calculate Population Layer (Layer 8)
             let popOffset = country.length * 45; 
             currentPopRotation += 720 + popOffset - (currentPopRotation % 360);
             document.getElementById('layer-pop').style.transform = `rotate(${currentPopRotation}deg)`;
@@ -285,12 +290,46 @@
             currentGenRotation += 360 + genOffset - (currentGenRotation % 360);
             document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg)`;
 
+            // 4. Calculate Planet Dominance (Layer 7) via Numerology Life Path
+            // Sum all digits of the birthdate until it reduces to 1-9
+            const dobString = dob.replace(/-/g, ''); 
+            let lifePath = 0;
+            for (let i = 0; i < dobString.length; i++) {
+                lifePath += parseInt(dobString[i]);
+            }
+            while (lifePath > 9) {
+                let temp = 0;
+                let lpStr = lifePath.toString();
+                for (let i = 0; i < lpStr.length; i++) {
+                    temp += parseInt(lpStr[i]);
+                }
+                lifePath = temp;
+            }
+
+            // Map the 9 planets to their respective rotation angle needed to reach the top pointer
+            // Based on visual layout of Layer 7 starting with Saturn at the top (0 degrees)
+            const planetData = {
+                1: { name: "Sun", angle: 80 },        // Sun needs +80° to reach top
+                2: { name: "Moon", angle: 200 },      // Moon needs +200° to reach top
+                3: { name: "Jupiter", angle: 160 },   // Jupiter needs +160° to reach top
+                4: { name: "Uranus", angle: 120 },    // Uranus needs +120° to reach top
+                5: { name: "Mercury", angle: 280 },   // Mercury needs +280° to reach top
+                6: { name: "Venus", angle: 240 },     // Venus needs +240° to reach top
+                7: { name: "Earth", angle: 320 },     // Earth needs +320° to reach top
+                8: { name: "Saturn", angle: 0 },      // Saturn is already top, 0°
+                9: { name: "Mars", angle: 40 }        // Mars needs +40° to reach top
+            };
+
+            const dominantPlanet = planetData[lifePath];
+            currentPlanetRotation += 720 + dominantPlanet.angle - (currentPlanetRotation % 360);
+            document.getElementById('layer-planets').style.transform = `rotate(${currentPlanetRotation}deg)`;
+
             // Generate Reading
             const month = dateObj.getMonth();
-            generateReading(month, country, generation, core);
+            generateReading(month, country, generation, core, dominantPlanet.name);
         }
 
-        function generateReading(month, country, generation, core) {
+        function generateReading(month, country, generation, core, planetName) {
             const resultsPanel = document.getElementById('results-panel');
             resultsPanel.style.display = 'none'; 
             
@@ -318,6 +357,10 @@
                         Aligned with <strong>${season}</strong> and <strong>${element}</strong> under <strong>${energy}</strong> energy.
                     </div>
                     <div class="result-section">
+                        <div class="result-title">Celestial Dominance</div>
+                        Your birth date vibrations align with <strong>${planetName}</strong>, guiding your overarching macro influence.
+                    </div>
+                    <div class="result-section">
                         <div class="result-title">Macro Bias</div>
                         Positioned within the <strong>${country}</strong> population ring, influenced by collective gravity constraints.
                     </div>
@@ -326,5 +369,6 @@
             }, 500); 
         }
     </script>
+    
 </body>
 </html>
