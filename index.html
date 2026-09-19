@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Mandala Alignment</title>
-    <style>
+        <style>
         :root {
             --bg-color: #0b0c10;
             --panel-bg: #1f2833;
@@ -108,7 +108,6 @@
             filter: drop-shadow(0 0 8px var(--accent));
         }
 
-        /* Updated CSS Classes based on your corrections */
         .complete-mandala {
             position: absolute;
             top: 0;
@@ -119,6 +118,9 @@
             z-index: 0;
             opacity: 0.15;
             pointer-events: none;
+            /* Makes the reference image transparent over dark background */
+            filter: invert(1);
+            mix-blend-mode: screen; 
         }
 
         .layer {
@@ -130,8 +132,11 @@
             object-fit: contain;
             transform-origin: center center;
             pointer-events: none;
-            /* Smooth transitions for Javascript rotation */
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            
+            /* THIS IS THE MAGIC THAT REMOVES THE WHITE BACKGROUND */
+            filter: invert(1) brightness(1.2) contrast(1.2); 
+            mix-blend-mode: screen; 
         }
 
         /* Ambient background rotations for nature/cosmos layers */
@@ -160,6 +165,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+
 </head>
 <body>
 
