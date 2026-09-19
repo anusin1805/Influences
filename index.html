@@ -79,21 +79,24 @@
             background-color: var(--accent-dim);
         }
         
-        /* Main Stage & Mandala Layers CSS */
         .main-stage {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            background-color: var(--bg-color);
         }
+        
         .mandala-container {
             position: relative;
             width: 85vh;
             height: 85vh;
             max-width: 900px;
             max-height: 900px;
+            isolation: isolate; /* Crucial for iOS stacking context */
         }
+        
         .pointer {
             position: absolute;
             top: -20px;
@@ -108,47 +111,55 @@
             filter: drop-shadow(0 0 8px var(--accent));
         }
 
-        .complete-mandala {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            z-index: 0;
-            opacity: 0.15;
-            pointer-events: none;
-            -webkit-filter: invert(1);
-            filter: invert(1);
-            -webkit-mix-blend-mode: screen;
-            mix-blend-mode: screen; 
-        }
-
+        /* 
+           iOS FIX: The wrapper handles rotation and mix-blend-mode.
+        */
         .layer {
             position: absolute;
             top: 0; 
             left: 0;
             width: 100%; 
             height: 100%;
-            object-fit: contain;
-            transform-origin: center center;
             pointer-events: none;
+            transform-origin: center center;
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
             
-            /* iOS Safari specific compatibility added here */
-            -webkit-filter: invert(1) brightness(1.2) contrast(1.2);
-            filter: invert(1) brightness(1.2) contrast(1.2); 
+            /* Apple iOS transparency setup */
             -webkit-mix-blend-mode: screen;
             mix-blend-mode: screen; 
+            
+            /* Hardware acceleration */
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
 
-        /* Ambient background rotations for nature/cosmos layers (Fixed Comment syntax!) */
+        /* 
+           iOS FIX: The image inside handles ONLY the filter.
+        */
+        .layer-img {
+            width: 100%; 
+            height: 100%;
+            object-fit: contain;
+            
+            /* NOTE: If your original sketches already have a BLACK background, 
+               delete the two filter lines below! */
+            -webkit-filter: invert(100%) brightness(120%) contrast(120%);
+            filter: invert(100%) brightness(120%) contrast(120%); 
+        }
+
+        /* Ambient background rotations for nature/cosmos layers */
         .layer-3 { animation: rotate-slow 180s linear infinite; } /* Seasons */
         .layer-4 { animation: rotate-reverse 150s linear infinite; } /* Elements */
         .layer-6 { animation: rotate-slow 240s linear infinite; } /* Energy */
 
-        @keyframes rotate-slow { from {transform: rotate(0deg)} to {transform: rotate(360deg)} }
-        @keyframes rotate-reverse { from {transform: rotate(360deg)} to {transform: rotate(0deg)} }
+        @keyframes rotate-slow { 
+            from { transform: rotate(0deg) translate3d(0,0,0); } 
+            to { transform: rotate(360deg) translate3d(0,0,0); } 
+        }
+        @keyframes rotate-reverse { 
+            from { transform: rotate(360deg) translate3d(0,0,0); } 
+            to { transform: rotate(0deg) translate3d(0,0,0); } 
+        }
 
         #results-panel {
             margin-top: 1rem;
@@ -212,37 +223,55 @@
         <div id="results-panel"></div>
     </div>
 
-    <!-- Updated Main Stage with correct layer tracking -->
+    <!-- Main Stage restructured to fix iOS bugs -->
     <div class="main-stage">
         <div class="mandala-container">
             <div class="pointer"></div>
 
             <!-- Layer 1 -->
-            <img src="IMG_7914.jpeg" class="layer layer-1" id="layer-core" alt="Core Layer">
+            <div class="layer layer-1" id="layer-core">
+                <img src="IMG_7914.jpeg" class="layer-img" alt="Core Layer">
+            </div>
             
             <!-- Layer 2 -->
-            <img src="IMG_7915.jpeg" class="layer layer-2" id="layer-gen" alt="Generations Layer">
+            <div class="layer layer-2" id="layer-gen">
+                <img src="IMG_7915.jpeg" class="layer-img" alt="Generations Layer">
+            </div>
             
             <!-- Layer 3 -->
-            <img src="IMG_7916.jpeg" class="layer layer-3" alt="Seasons Layer">
+            <div class="layer layer-3">
+                <img src="IMG_7916.jpeg" class="layer-img" alt="Seasons Layer">
+            </div>
             
             <!-- Layer 4 -->
-            <img src="IMG_7924.jpeg" class="layer layer-4" alt="Elements Layer">
+            <div class="layer layer-4">
+                <img src="IMG_7924.jpeg" class="layer-img" alt="Elements Layer">
+            </div>
             
             <!-- Layer 5 -->
-            <img src="IMG_7923.jpeg" class="layer layer-5" id="layer-week" alt="Weekdays Layer">
+            <div class="layer layer-5" id="layer-week">
+                <img src="IMG_7923.jpeg" class="layer-img" alt="Weekdays Layer">
+            </div>
             
             <!-- Layer 6 -->
-            <img src="IMG_7924.jpeg" class="layer layer-6" alt="Energy Layer">
+            <div class="layer layer-6">
+                <img src="IMG_7924.jpeg" class="layer-img" alt="Energy Layer">
+            </div>
             
-            <!-- Layer 7 (Planets Layer ID added for JS targeting) -->
-            <img src="IMG_7925.jpeg" class="layer layer-7" id="layer-planets" alt="Planets Layer">
+            <!-- Layer 7 -->
+            <div class="layer layer-7" id="layer-planets">
+                <img src="IMG_7925.jpeg" class="layer-img" alt="Planets Layer">
+            </div>
             
             <!-- Layer 8 -->
-            <img src="IMG_7926.jpeg" class="layer layer-8" id="layer-pop" alt="Population Layer">
+            <div class="layer layer-8" id="layer-pop">
+                <img src="IMG_7926.jpeg" class="layer-img" alt="Population Layer">
+            </div>
             
             <!-- Layer 9 -->
-            <img src="IMG_7927.jpeg" class="layer layer-9" id="layer-days" alt="365 Days Layer">
+            <div class="layer layer-9" id="layer-days">
+                <img src="IMG_7927.jpeg" class="layer-img" alt="365 Days Layer">
+            </div>
         </div>
     </div>
     
@@ -263,27 +292,28 @@
                 return;
             }
 
-            // 1. Calculate Day Layer (Layer 9)
+            // Calculate Day Layer (Layer 9)
             const dateObj = new Date(dob + "T00:00:00");
             const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
             const dayOfYear = Math.floor((dateObj - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
             const targetDayRotation = ((dayOfYear - 1) / 365) * 360;
-
             currentDayRotation += 1080 + targetDayRotation - (currentDayRotation % 360);
-            document.getElementById('layer-days').style.transform = `rotate(${currentDayRotation}deg)`;
+            
+            // Added translate3d(0,0,0) here to maintain iOS GPU acceleration during spin
+            document.getElementById('layer-days').style.transform = `rotate(${currentDayRotation}deg) translate3d(0,0,0)`;
 
-            // 2. Calculate Population Layer (Layer 8)
+            // Calculate Population Layer (Layer 8)
             let popOffset = country.length * 45; 
             currentPopRotation += 720 + popOffset - (currentPopRotation % 360);
-            document.getElementById('layer-pop').style.transform = `rotate(${currentPopRotation}deg)`;
+            document.getElementById('layer-pop').style.transform = `rotate(${currentPopRotation}deg) translate3d(0,0,0)`;
 
-            // 3. Calculate Generation Layer (Layer 2)
+            // Calculate Generation Layer (Layer 2)
             const genMapAngles = { "Gen1": 0, "Gen2": 90, "Gen3": 180, "Gen4": 270 };
             let genOffset = genMapAngles[generation];
             currentGenRotation += 360 + genOffset - (currentGenRotation % 360);
-            document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg)`;
+            document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg) translate3d(0,0,0)`;
 
-            // 4. Calculate Planet Dominance (Layer 7) via Numerology Life Path
+            // Calculate Planet Dominance (Layer 7) via Numerology
             const dobString = dob.replace(/-/g, ''); 
             let lifePath = 0;
             for (let i = 0; i < dobString.length; i++) {
@@ -312,9 +342,8 @@
 
             const dominantPlanet = planetData[lifePath];
             currentPlanetRotation += 720 + dominantPlanet.angle - (currentPlanetRotation % 360);
-            document.getElementById('layer-planets').style.transform = `rotate(${currentPlanetRotation}deg)`;
+            document.getElementById('layer-planets').style.transform = `rotate(${currentPlanetRotation}deg) translate3d(0,0,0)`;
 
-            // Generate Reading
             const month = dateObj.getMonth();
             generateReading(month, country, generation, core, dominantPlanet.name);
         }
