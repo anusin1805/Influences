@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Mandala Alignment</title>
-        <style>
+    <style>
         :root {
             --bg-color: #0b0c10;
             --panel-bg: #1f2833;
@@ -118,8 +118,9 @@
             z-index: 0;
             opacity: 0.15;
             pointer-events: none;
-            /* Makes the reference image transparent over dark background */
+            -webkit-filter: invert(1);
             filter: invert(1);
+            -webkit-mix-blend-mode: screen;
             mix-blend-mode: screen; 
         }
 
@@ -134,15 +135,17 @@
             pointer-events: none;
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
             
-            /* THIS IS THE MAGIC THAT REMOVES THE WHITE BACKGROUND */
+            /* iOS Safari specific compatibility added here */
+            -webkit-filter: invert(1) brightness(1.2) contrast(1.2);
             filter: invert(1) brightness(1.2) contrast(1.2); 
+            -webkit-mix-blend-mode: screen;
             mix-blend-mode: screen; 
         }
 
-        /* Ambient background rotations for nature/cosmos layers */
+        /* Ambient background rotations for nature/cosmos layers (Fixed Comment syntax!) */
         .layer-3 { animation: rotate-slow 180s linear infinite; } /* Seasons */
         .layer-4 { animation: rotate-reverse 150s linear infinite; } /* Elements */
-        .layer-6 { animation: rotate-slow 240s linear infinite; } /* 
+        .layer-6 { animation: rotate-slow 240s linear infinite; } /* Energy */
 
         @keyframes rotate-slow { from {transform: rotate(0deg)} to {transform: rotate(360deg)} }
         @keyframes rotate-reverse { from {transform: rotate(360deg)} to {transform: rotate(0deg)} }
@@ -164,7 +167,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-
 </head>
 <body>
 
@@ -215,10 +217,6 @@
         <div class="mandala-container">
             <div class="pointer"></div>
 
-            <!-- Optional complete/reference mandala -->
-            <!-- Uncomment the line below to display it as a faint background reference -->
-            <!-- <img src="IMG_7918.jpeg" class="complete-mandala"> -->
-
             <!-- Layer 1 -->
             <img src="IMG_7914.jpeg" class="layer layer-1" id="layer-core" alt="Core Layer">
             
@@ -237,8 +235,8 @@
             <!-- Layer 6 -->
             <img src="IMG_7924.jpeg" class="layer layer-6" alt="Energy Layer">
             
-            <!-- Layer 7 -->
-            <img src="IMG_7925.jpeg" class="layer layer-7" alt="Planets Layer">
+            <!-- Layer 7 (Planets Layer ID added for JS targeting) -->
+            <img src="IMG_7925.jpeg" class="layer layer-7" id="layer-planets" alt="Planets Layer">
             
             <!-- Layer 8 -->
             <img src="IMG_7926.jpeg" class="layer layer-8" id="layer-pop" alt="Population Layer">
@@ -247,6 +245,7 @@
             <img src="IMG_7927.jpeg" class="layer layer-9" id="layer-days" alt="365 Days Layer">
         </div>
     </div>
+    
     <script>
         let currentDayRotation = 0;
         let currentPopRotation = 0;
@@ -285,7 +284,6 @@
             document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg)`;
 
             // 4. Calculate Planet Dominance (Layer 7) via Numerology Life Path
-            // Sum all digits of the birthdate until it reduces to 1-9
             const dobString = dob.replace(/-/g, ''); 
             let lifePath = 0;
             for (let i = 0; i < dobString.length; i++) {
@@ -300,18 +298,16 @@
                 lifePath = temp;
             }
 
-            // Map the 9 planets to their respective rotation angle needed to reach the top pointer
-            // Based on visual layout of Layer 7 starting with Saturn at the top (0 degrees)
             const planetData = {
-                1: { name: "Sun", angle: 80 },        // Sun needs +80° to reach top
-                2: { name: "Moon", angle: 200 },      // Moon needs +200° to reach top
-                3: { name: "Jupiter", angle: 160 },   // Jupiter needs +160° to reach top
-                4: { name: "Uranus", angle: 120 },    // Uranus needs +120° to reach top
-                5: { name: "Mercury", angle: 280 },   // Mercury needs +280° to reach top
-                6: { name: "Venus", angle: 240 },     // Venus needs +240° to reach top
-                7: { name: "Earth", angle: 320 },     // Earth needs +320° to reach top
-                8: { name: "Saturn", angle: 0 },      // Saturn is already top, 0°
-                9: { name: "Mars", angle: 40 }        // Mars needs +40° to reach top
+                1: { name: "Sun", angle: 80 },        
+                2: { name: "Moon", angle: 200 },      
+                3: { name: "Jupiter", angle: 160 },   
+                4: { name: "Uranus", angle: 120 },    
+                5: { name: "Mercury", angle: 280 },   
+                6: { name: "Venus", angle: 240 },     
+                7: { name: "Earth", angle: 320 },     
+                8: { name: "Saturn", angle: 0 },      
+                9: { name: "Mars", angle: 40 }        
             };
 
             const dominantPlanet = planetData[lifePath];
@@ -363,6 +359,5 @@
             }, 500); 
         }
     </script>
-    
 </body>
 </html>
