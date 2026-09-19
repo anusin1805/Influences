@@ -120,7 +120,7 @@
             filter: drop-shadow(0 0 8px var(--accent));
         }
 
-        /* FIXED: Single, clean layer definition */
+        /* 1. LAYER: Handles ONLY the rotation */
         .layer {
             position: absolute;
             inset: 0;
@@ -129,44 +129,38 @@
             pointer-events: none;
             transform-origin: center center;
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
-            
-            /* No blend mode required if SVG filter handles transparency */
-            mix-blend-mode: normal;
-            -webkit-mix-blend-mode: normal;
-
-            /* Safe iOS rendering */
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            will-change: transform;
         }
 
+        /* 2. BLEND WRAPPER: Handles ONLY the transparency */
+        .blend-wrapper {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            mix-blend-mode: screen;
+            -webkit-mix-blend-mode: screen;
+        }
+
+        /* 3. IMAGE: Handles ONLY the color invert */
         .layer-img {
             display: block;
             width: 100%;
             height: 100%;
             object-fit: contain;
-
-            /* SVG filter applied to drop white paper background */
-            filter: url(#remove-white);
-            -webkit-filter: url(#remove-white);
-            pointer-events: none;
+            filter: invert(100%) brightness(120%) contrast(120%);
+            -webkit-filter: invert(100%) brightness(120%) contrast(120%);
         }
 
-        /* FIXED: Added ambient animations back in! */
+        /* Z-indexes and Continuous Animations */
         .layer-1 { z-index: 1; }
         .layer-2 { z-index: 2; }
         .layer-3 { z-index: 3; animation: rotate-slow 180s linear infinite; }
         .layer-4 { z-index: 4; animation: rotate-reverse 150s linear infinite; }
         .layer-5 { z-index: 5; }
         .layer-6 { z-index: 6; animation: rotate-slow 240s linear infinite; }
-        .layer-7 { z-index: 8; }
+        .layer-7 { z-index: 8; } /* Planet layer bumped up */
         .layer-8 { z-index: 7; }
         .layer-9 { z-index: 9; }
-
-        #layer-planets .layer-img {
-            filter: url(#remove-white);
-            -webkit-filter: url(#remove-white);
-        }
 
         @keyframes rotate-slow { 
             from { transform: rotate(0deg); } 
@@ -196,22 +190,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-    
-    <!-- Custom SVG filter -->
-    <svg width="0" height="0" style="position:absolute;">
-        <defs>
-            <filter id="remove-white" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
-                <feColorMatrix type="matrix" values="
-                    1 0 0 0 0
-                    0 1 0 0 0
-                    0 0 1 0 0
-                    -0.333 -0.333 -0.333 0 1" result="transparentWhite"/>
-                <feComponentTransfer in="transparentWhite">
-                    <feFuncA type="gamma" amplitude="1" exponent="3" offset="0"/>
-                </feComponentTransfer>
-            </filter>
-        </defs>
-    </svg>
 </head>
 <body>
 
@@ -257,20 +235,46 @@
         <div id="results-panel"></div>
     </div>
 
-    <!-- Main Stage -->
+    <!-- Main Stage - Now uses a nested structure to prevent iOS Safari crashes -->
     <div class="main-stage">
         <div class="mandala-container">
             <div class="pointer"></div>
 
-            <div class="layer layer-1" id="layer-core"><img src="IMG_7914.jpeg" class="layer-img" alt="Core Layer"></div>
-            <div class="layer layer-2" id="layer-gen"><img src="IMG_7915.jpeg" class="layer-img" alt="Generations Layer"></div>
-            <div class="layer layer-3"><img src="IMG_7916.jpeg" class="layer-img" alt="Seasons Layer"></div>
-            <div class="layer layer-4"><img src="IMG_7917.jpeg" class="layer-img" alt="Elements Layer"></div>
-            <div class="layer layer-5" id="layer-week"><img src="IMG_7923.jpeg" class="layer-img" alt="Weekdays Layer"></div>
-            <div class="layer layer-6"><img src="IMG_7924.jpeg" class="layer-img" alt="Energy Layer"></div>
-            <div class="layer layer-7" id="layer-planets"><img src="IMG_7925.jpeg" class="layer-img planet-img" alt="Planets Layer"></div>
-            <div class="layer layer-8" id="layer-pop"><img src="IMG_7926.jpeg" class="layer-img" alt="Population Layer"></div>
-            <div class="layer layer-9" id="layer-days"><img src="IMG_7927.jpeg" class="layer-img" alt="365 Days Layer"></div>
+            <div class="layer layer-1" id="layer-core">
+                <div class="blend-wrapper"><img src="IMG_7914.jpeg" class="layer-img" alt="Core Layer"></div>
+            </div>
+            
+            <div class="layer layer-2" id="layer-gen">
+                <div class="blend-wrapper"><img src="IMG_7915.jpeg" class="layer-img" alt="Generations Layer"></div>
+            </div>
+            
+            <div class="layer layer-3">
+                <div class="blend-wrapper"><img src="IMG_7916.jpeg" class="layer-img" alt="Seasons Layer"></div>
+            </div>
+            
+            <div class="layer layer-4">
+                <div class="blend-wrapper"><img src="IMG_7917.jpeg" class="layer-img" alt="Elements Layer"></div>
+            </div>
+            
+            <div class="layer layer-5" id="layer-week">
+                <div class="blend-wrapper"><img src="IMG_7923.jpeg" class="layer-img" alt="Weekdays Layer"></div>
+            </div>
+            
+            <div class="layer layer-6">
+                <div class="blend-wrapper"><img src="IMG_7924.jpeg" class="layer-img" alt="Energy Layer"></div>
+            </div>
+            
+            <div class="layer layer-7" id="layer-planets">
+                <div class="blend-wrapper"><img src="IMG_7925.jpeg" class="layer-img" alt="Planets Layer"></div>
+            </div>
+            
+            <div class="layer layer-8" id="layer-pop">
+                <div class="blend-wrapper"><img src="IMG_7926.jpeg" class="layer-img" alt="Population Layer"></div>
+            </div>
+            
+            <div class="layer layer-9" id="layer-days">
+                <div class="blend-wrapper"><img src="IMG_7927.jpeg" class="layer-img" alt="365 Days Layer"></div>
+            </div>
         </div>
     </div>
     
@@ -297,23 +301,17 @@
             const dayOfYear = Math.floor((dateObj - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
             const targetDayRotation = ((dayOfYear - 1) / 365) * 360;
             currentDayRotation += 1080 + targetDayRotation - (currentDayRotation % 360);
-            
-            // FIXED: Removed translate3d from JS
             document.getElementById('layer-days').style.transform = `rotate(${currentDayRotation}deg)`;
 
             // Layer 8
             let popOffset = country.length * 45; 
             currentPopRotation += 720 + popOffset - (currentPopRotation % 360);
-            
-            // FIXED: Removed translate3d from JS
             document.getElementById('layer-pop').style.transform = `rotate(${currentPopRotation}deg)`;
 
             // Layer 2
             const genMapAngles = { "Gen1": 0, "Gen2": 90, "Gen3": 180, "Gen4": 270 };
             let genOffset = genMapAngles[generation];
             currentGenRotation += 360 + genOffset - (currentGenRotation % 360);
-            
-            // FIXED: Removed translate3d from JS
             document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg)`;
 
             // Layer 7
@@ -345,8 +343,6 @@
 
             const dominantPlanet = planetData[lifePath];
             currentPlanetRotation += 720 + dominantPlanet.angle - (currentPlanetRotation % 360);
-            
-            // FIXED: Removed translate3d from JS
             document.getElementById('layer-planets').style.transform = `rotate(${currentPlanetRotation}deg)`;
 
             const month = dateObj.getMonth();
