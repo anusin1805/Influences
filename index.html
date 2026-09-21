@@ -1,367 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Mandala Alignment</title>
-    <style>
-        :root {
-            --bg-color: #0b0c10;
-            --panel-bg: #1f2833;
-            --text-main: #c5c6c7;
-            --accent: #66fcf1;
-            --accent-dim: #45a29e;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .sidebar {
-            width: 350px;
-            background-color: var(--panel-bg);
-            padding: 2rem;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            overflow-y: auto;
-            z-index: 10;
-        }
-        h1 {
-            color: var(--accent);
-            font-size: 1.5rem;
-            margin-top: 0;
-            text-align: center;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        label {
-            font-size: 0.9rem;
-            color: var(--accent-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        input, select {
-            padding: 0.8rem;
-            background-color: var(--bg-color);
-            border: 1px solid var(--accent-dim);
-            color: var(--text-main);
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        button {
-            padding: 1rem;
-            background-color: var(--accent);
-            color: var(--bg-color);
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 1rem;
-        }
-        button:hover {
-            background-color: var(--accent-dim);
-        }
-        
-        .main-stage {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #18222d 0%, #0b0c10 65%, #050609 100%);
-        }
-        
-        .mandala-container {
-            position: relative;
-            width: min(85vw, 85vh, 900px);
-            height: min(85vw, 85vh, 900px);
-            max-width: 900px;
-            max-height: 900px;
-            isolation: isolate;
-        }
-        
-        @media (max-width: 768px) {
-            body { height: 100dvh; }
-            .sidebar { width: 280px; padding: 1rem; }
-            .main-stage { min-width: 0; }
-            .mandala-container { width: min(82vw, 82vh); height: min(82vw, 82vh); }
-        }
-        
-        .pointer {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid var(--accent);
-            z-index: 20;
-            filter: drop-shadow(0 0 8px var(--accent));
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Mandala - Interpretive Visualization</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    background: #050e1e; 
+    color: #c9a86a; 
+    font-family: Inter, sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+  }
+  
+  .notice {
+    width: 90%; 
+    max-width: 1000px; 
+    margin: 20px auto; 
+    padding: 10px 16px;
+    background: linear-gradient(90deg, #d4af37, #f1d27a); 
+    color: #000; 
+    border-radius: 8px; 
+    font-size: 12px; 
+    letter-spacing: 0.5px;
+  }
+  
+  .mandala-container {
+    position: relative; 
+    width: 90vmin; 
+    height: 90vmin; 
+    max-width: 800px; 
+    max-height: 800px;
+    margin: 20px auto;
+  }
+  
+  .layer {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    border-radius: 50%; 
+    transform-origin: center center;
+    transition: scale 0.3s ease;
+  }
+  
+  /* RINGS */
+  .ring { border: 1px solid rgba(201,168,106,0.25); }
+  
+  /* CORE */
+  #core {
+    width: 12%; height: 12%; top: 44%; left: 44%;
+    background: radial-gradient(circle, #1a2a4a, #0a1628);
+    border: 1px solid #c9a86a; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 8px; 
+    text-align: center; 
+    line-height: 1.1;
+    z-index: 20;
+  }
 
-        .layer {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            transform-origin: center center;
-            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
+  /* ANIMATIONS */
+  .rotate-slow { animation: rot 180s linear infinite; }
+  .rotate-mid { animation: rot 120s linear infinite; }
+  .rotate-fast { animation: rot 60s linear infinite; }
+  .rotate-rev { animation: rotRev 150s linear infinite; }
+  .rotate-super-slow { animation: rot 300s linear infinite; }
+  
+  @keyframes rot { from { rotate: 0deg; } to { rotate: 360deg; } }
+  @keyframes rotRev { from { rotate: 360deg; } to { rotate: 0deg; } }
 
-        .layer-img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            /* This SVG filter removes white backgrounds cleanly on iOS Safari */
-            filter: url(#remove-white-bg);
-            -webkit-filter: url(#remove-white-bg);
-        }
+  /* LAYER 10: UN SDG */
+  #sdg {
+    background: conic-gradient(
+      from 0deg,
+      #E5243B 0 21.17deg, #DDA63A 21.17deg 42.35deg, #4C9F38 42.35deg 63.52deg,
+      #C5192D 63.52deg 84.7deg, #FF3A21 84.7deg 105.88deg, #26BDE2 105.88deg 127.05deg,
+      #FCC30B 127.05deg 148.23deg, #A21942 148.23deg 169.41deg, #FD6925 169.41deg 190.58deg,
+      #DD1367 190.58deg 211.76deg, #FD9D24 211.76deg 232.94deg, #BF8B2E 232.94deg 254.11deg,
+      #3F7E44 254.11deg 275.29deg, #0A97D9 275.29deg 296.47deg, #56C02B 296.47deg 317.64deg,
+      #00689D 317.64deg 338.82deg, #19486A 338.82deg 360deg
+    );
+    mask: radial-gradient(circle, transparent 97%, black 98% 100%, transparent 100%);
+    -webkit-mask: radial-gradient(circle, transparent 97%, black 98% 100%, transparent 100%);
+  }
 
-        /* Z-indexes and Continuous Animations */
-        .layer-1 { z-index: 1; }
-        .layer-2 { z-index: 2; }
-        .layer-3 { z-index: 3; animation: rotate-slow 180s linear infinite; }
-        .layer-4 { z-index: 4; animation: rotate-reverse 150s linear infinite; }
-        .layer-5 { z-index: 5; }
-        .layer-6 { z-index: 6; animation: rotate-slow 240s linear infinite; }
-        .layer-7 { z-index: 8; } 
-        .layer-8 { z-index: 7; }
-        .layer-9 { z-index: 9; }
+  /* TICK MARKS */
+  .ticks {
+    background: repeating-conic-gradient(from 0deg, transparent 0 1.2deg, rgba(201,168,106,0.3) 1.2deg 1.4deg);
+    mask: radial-gradient(circle, transparent 96%, black 97%);
+    -webkit-mask: radial-gradient(circle, transparent 96%, black 97%);
+  }
 
-        @keyframes rotate-slow { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
-        }
-        @keyframes rotate-reverse { 
-            from { transform: rotate(360deg); } 
-            to { transform: rotate(0deg); } 
-        }
+  /* ENERGY YIN YANG */
+  #energy {
+    background: conic-gradient(from 0deg, #f1d27a 0 180deg, #0a1628 180deg 360deg);
+    mask: radial-gradient(circle, transparent 68%, black 69% 73%, transparent 74%);
+    -webkit-mask: radial-gradient(circle, transparent 68%, black 69% 73%, transparent 74%);
+    opacity: 0.6;
+  }
+  #energy::before {
+    content: ''; 
+    position: absolute; 
+    width: 32%; 
+    height: 32%; 
+    border-radius: 50%;
+    background: #0a1628; 
+    top: 34%; 
+    left: 18%; 
+    box-shadow: 0 0 0 1px #c9a86a;
+  }
 
-        #results-panel {
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: rgba(0,0,0,0.3);
-            border-left: 3px solid var(--accent);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            display: none;
-            animation: fadeIn 1s forwards;
-        }
-        
-        .result-section { margin-bottom: 1rem; }
-        .result-title { color: var(--accent); font-weight: bold; margin-bottom: 0.3rem; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-
-    <!-- SVG Filter to make white pixels transparent while keeping colors intact -->
-    <svg width="0" height="0" style="position: absolute;">
-        <filter id="remove-white-bg" color-interpolation-filters="sRGB">
-            <feColorMatrix type="matrix" values="
-                1 0 0 0 0
-                0 1 0 0 0
-                0 0 1 0 0
-                -1 -1 -1 0 1" result="transparentWhite"/>
-        </filter>
-    </svg>
+  /* LABELS POSITIONING */
+  .label {
+    position: absolute; 
+    font-size: 7px; 
+    text-transform: uppercase; 
+    transform: translate(-50%, -50%);
+    white-space: nowrap; 
+    color: #e8d5a3;
+    font-weight: 600;
+  }
+  
+  /* SDG specific label styling for better contrast on the color ring */
+  #sdg .label {
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(0,0,0,0.8);
+    font-size: 6px;
+  }
+</style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h1>Cosmic Alignment</h1>
-        
-        <div class="form-group">
-            <label for="dob">Date of Birth (Outer Time Layer)</label>
-            <input type="date" id="dob" required>
-        </div>
+<div class="notice">✦ This is an interpretive visualisation, not a factual astrological claim.</div>
 
-        <div class="form-group">
-            <label for="country">Region (Population Ring)</label>
-            <select id="country">
-                <option value="India">India (1.5B)</option>
-                <option value="China">China (1.5B)</option>
-                <option value="Africa">Africa (1B)</option>
-                <option value="Middle East">Middle East (650M)</option>
-                <option value="East/South Asia">East & South Asia (300M)</option>
-                <option value="USA/Canada">USA/Canada (480M)</option>
-                <option value="Europe">Europe/UK/Italy (120M+)</option>
-                <option value="South America">Argentina & South America</option>
-            </select>
-        </div>
+<div class="mandala-container" id="mandala">
+  <!-- LAYER 10 - UN SDG -->
+  <div class="layer rotate-super-slow" id="sdg" style="width:100%;height:100%;top:0;left:0%"></div>
 
-        <div class="form-group">
-            <label for="generation">Family Role (Inner Generation Layer)</label>
-            <select id="generation">
-                <option value="Gen1">Gen1: Grandparent (Foundation)</option>
-                <option value="Gen2">Gen2: Parent (Stewardship)</option>
-                <option value="Gen3">Gen3: Child (Growth)</option>
-                <option value="Gen4">Gen4: Grandchild (Future)</option>
-            </select>
-        </div>
+  <!-- LAYER 9 - 365 DAYS OUTER -->
+  <div class="layer ticks rotate-slow" style="width:100%;height:100%"></div>
 
-        <div class="form-group">
-            <label for="core">Core (Religion & Politics)</label>
-            <input type="text" id="core" placeholder="e.g., Buddhism, Secular, Crossroads" required>
-        </div>
+  <!-- LAYER 8 - COUNTRIES EAST WEST + MONTHS -->
+  <div class="layer ring" style="width:92%;height:92%;top:4%;left:4%" id="months"></div>
 
-        <button onclick="calculateAlignment()">Reveal Life Blueprint</button>
+  <!-- LAYER 7 - POPULATION -->
+  <div class="layer ring" style="width:82%;height:82%;top:9%;left:9%" id="pop"></div>
 
-        <div id="results-panel"></div>
-    </div>
+  <!-- LAYER 6 - PLANETS -->
+  <div class="layer ring" style="width:72%;height:72%;top:14%;left:14%" id="planets"></div>
 
-    <!-- Main Stage -->
-    <div class="main-stage">
-        <div class="mandala-container">
-            <div class="pointer"></div>
+  <!-- LAYER 5 - ENERGY -->
+  <div class="layer rotate-rev" id="energy" style="width:62%;height:62%;top:19%;left:19%"></div>
 
-            <div class="layer layer-1" id="layer-core"><img src="IMG_7914.jpeg" class="layer-img" alt="Core Layer"></div>
-            <div class="layer layer-2" id="layer-gen"><img src="IMG_7915.jpeg" class="layer-img" alt="Generations Layer"></div>
-            <div class="layer layer-3"><img src="IMG_7916.jpeg" class="layer-img" alt="Seasons Layer"></div>
-            <div class="layer layer-4"><img src="IMG_7917.jpeg" class="layer-img" alt="Elements Layer"></div>
-            <div class="layer layer-5" id="layer-week"><img src="IMG_7923.jpeg" class="layer-img" alt="Weekdays Layer"></div>
-            <div class="layer layer-6"><img src="IMG_7924.jpeg" class="layer-img" alt="Energy Layer"></div>
-            <div class="layer layer-7" id="layer-planets"><img src="IMG_7925.jpeg" class="layer-img" alt="Planets Layer"></div>
-            <div class="layer layer-8" id="layer-pop"><img src="IMG_7926.jpeg" class="layer-img" alt="Population Layer"></div>
-            <div class="layer layer-9" id="layer-days"><img src="IMG_7927.jpeg" class="layer-img" alt="365 Days Layer"></div>
-        </div>
-    </div>
+  <!-- LAYER 4 - WEEKDAYS -->
+  <div class="layer ring rotate-mid" style="width:52%;height:52%;top:24%;left:24%" id="week"></div>
+
+  <!-- LAYER 3 - ELEMENTS -->
+  <div class="layer ring" style="width:42%;height:42%;top:29%;left:29%" id="elements"></div>
+
+  <!-- LAYER 2 - SEASONS -->
+  <div class="layer ring rotate-slow" style="width:32%;height:32%;top:34%;left:34%" id="seasons"></div>
+
+  <!-- LAYER 1 - GENERATIONS + CORE -->
+  <div class="layer" id="core">CORE<br>Family<br>Religion<br>Israel</div>
+</div>
+
+<script>
+// Data structure for all rings
+const data = {
+  sdg: ["1 No Poverty","2 Zero Hunger","3 Health","4 Education","5 Gender","6 Water","7 Energy","8 Work","9 Industry","10 Inequality","11 Cities","12 Consumption","13 Climate","14 Oceans","15 Land","16 Peace","17 Partnership"],
+  months: ['JAN 1.5B India','FEB','MAR 1.5B China','APR Africa 1B','MAY MidEast 650M','JUN','JUL EastAsia 300M','AUG USA 330M','SEP','OCT UK 60M','NOV Italy 60M','DEC S.America'],
+  pop: ['India','China','Africa','Middle East','Vietnam','USA','Canada','UK','Italy','Argentina'],
+  planets: ['Saturn','Earth','Mercury','Venus','Moon','Jupiter','Uranus','Sun','Mars'],
+  week: ['Mon Moon','Tue Mars','Wed Mercury','Thu Jupiter','Fri Venus','Sat Saturn','Sun Sun'],
+  elements: ['Water','Air','Heat','Cold'],
+  seasons: ['Winter Wheat','Summer Cotton','Rainy Rice','Spring Fruits','Autumn Pulses']
+}
+
+// Function to calculate geometry and place labels
+function placeRing(id, items, radius){
+  const container = document.getElementById(id);
+  items.forEach((txt, i) => {
+    // Calculate angle (-90 offsets starting position to top)
+    const angle = (i / items.length) * 360 - 90;
+    const el = document.createElement('div');
+    el.className = 'label';
+    el.textContent = txt;
     
-    <script>
-        let currentDayRotation = 0;
-        let currentPopRotation = 0;
-        let currentGenRotation = 0;
-        let currentPlanetRotation = 0;
+    // Convert angle to radians for x/y coordinates
+    const rad = angle * Math.PI / 180;
+    
+    // Position using cosine (x) and sine (y)
+    el.style.left = (50 + radius * Math.cos(rad)) + '%';
+    el.style.top = (50 + radius * Math.sin(rad)) + '%';
+    
+    // Rotate text to follow the curve of the circle
+    el.style.rotate = (angle + 90) + 'deg';
+    container.appendChild(el);
+  });
+}
 
-        function calculateAlignment() {
-            const dob = document.getElementById('dob').value;
-            const country = document.getElementById('country').value;
-            const generation = document.getElementById('generation').value;
-            const core = document.getElementById('core').value;
+// Initialize all rings
+placeRing('sdg', data.sdg, 49);
+placeRing('months', data.months, 48);
+placeRing('pop', data.pop, 46);
+placeRing('planets', data.planets, 44);
+placeRing('week', data.week, 42);
+placeRing('elements', data.elements, 40);
+placeRing('seasons', data.seasons, 38);
 
-            if (!dob || !core) {
-                alert("Please complete the Date of Birth and Core inputs.");
-                return;
-            }
-
-            // Layer 9
-            const dateObj = new Date(dob + "T00:00:00");
-            const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-            const dayOfYear = Math.floor((dateObj - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
-            const targetDayRotation = ((dayOfYear - 1) / 365) * 360;
-            currentDayRotation += 1080 + targetDayRotation - (currentDayRotation % 360);
-            document.getElementById('layer-days').style.transform = `rotate(${currentDayRotation}deg)`;
-
-            // Layer 8
-            let popOffset = country.length * 45; 
-            currentPopRotation += 720 + popOffset - (currentPopRotation % 360);
-            document.getElementById('layer-pop').style.transform = `rotate(${currentPopRotation}deg)`;
-
-            // Layer 2
-            const genMapAngles = { "Gen1": 0, "Gen2": 90, "Gen3": 180, "Gen4": 270 };
-            let genOffset = genMapAngles[generation];
-            currentGenRotation += 360 + genOffset - (currentGenRotation % 360);
-            document.getElementById('layer-gen').style.transform = `rotate(${currentGenRotation}deg)`;
-
-            // Layer 7
-            const dobString = dob.replace(/-/g, ''); 
-            let lifePath = 0;
-            for (let i = 0; i < dobString.length; i++) {
-                lifePath += parseInt(dobString[i]);
-            }
-            while (lifePath > 9) {
-                let temp = 0;
-                let lpStr = lifePath.toString();
-                for (let i = 0; i < lpStr.length; i++) {
-                    temp += parseInt(lpStr[i]);
-                }
-                lifePath = temp;
-            }
-
-            const planetData = {
-                1: { name: "Sun", angle: 80 },        
-                2: { name: "Moon", angle: 200 },      
-                3: { name: "Jupiter", angle: 160 },   
-                4: { name: "Uranus", angle: 120 },    
-                5: { name: "Mercury", angle: 280 },   
-                6: { name: "Venus", angle: 240 },     
-                7: { name: "Earth", angle: 320 },     
-                8: { name: "Saturn", angle: 0 },      
-                9: { name: "Mars", angle: 40 }        
-            };
-
-            const dominantPlanet = planetData[lifePath];
-            currentPlanetRotation += 720 + dominantPlanet.angle - (currentPlanetRotation % 360);
-            document.getElementById('layer-planets').style.transform = `rotate(${currentPlanetRotation}deg)`;
-
-            const month = dateObj.getMonth();
-            generateReading(month, country, generation, core, dominantPlanet.name);
-        }
-
-        function generateReading(month, country, generation, core, planetName) {
-            const resultsPanel = document.getElementById('results-panel');
-            resultsPanel.style.display = 'none'; 
-            
-            let season, element, energy;
-            if (month >= 2 && month <= 4) { season = "Spring (Fruits)"; element = "Breath & Atmosphere"; energy = "Positive (+)"; }
-            else if (month >= 5 && month <= 7) { season = "Summer (Cotton)"; element = "Heat & Fire"; energy = "Negative (Entropy)"; }
-            else if (month >= 8 && month <= 10) { season = "Autumn (Pulses)"; element = "Earth & Grounding"; energy = "Negative (Entropy)"; }
-            else { season = "Winter (Wheat & Greens)"; element = "Water & Flow"; energy = "Positive (+)"; }
-
-            const genMapText = {
-                "Gen1": "Your core motivation relies on establishing foundational stability and passing down wisdom.",
-                "Gen2": "Your bias is geared toward stewardship, managing resources, and protecting the inner core.",
-                "Gen3": "You are driven by rapid growth, absorbing the seasonal changes to branch out.",
-                "Gen4": "Your orientation is futuristic, looking outward toward the elemental and cosmic layers."
-            };
-
-            setTimeout(() => {
-                resultsPanel.innerHTML = `
-                    <div class="result-section">
-                        <div class="result-title">Core Alignment</div>
-                        Rooted in <strong>${core}</strong>. ${genMapText[generation]}
-                    </div>
-                    <div class="result-section">
-                        <div class="result-title">Cosmic Drive</div>
-                        Aligned with <strong>${season}</strong> and <strong>${element}</strong> under <strong>${energy}</strong> energy.
-                    </div>
-                    <div class="result-section">
-                        <div class="result-title">Celestial Dominance</div>
-                        Your birth date vibrations align with <strong>${planetName}</strong>, guiding your overarching macro influence.
-                    </div>
-                    <div class="result-section">
-                        <div class="result-title">Macro Bias</div>
-                        Positioned within the <strong>${country}</strong> population ring, influenced by collective gravity constraints.
-                    </div>
-                `;
-                resultsPanel.style.display = 'block';
-            }, 500); 
-        }
-    </script>
+// Interactive peel effect on click
+document.querySelectorAll('.layer').forEach(layer => {
+  layer.addEventListener('click', () => {
+    layer.style.scale = layer.style.scale === '1.05' ? '1' : '1.05';
+  });
+});
+</script>
 </body>
 </html>
